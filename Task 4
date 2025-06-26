@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Full Project | Portfolio + To-Do + Products</title>
+  <style>
+    body { font-family: Arial; margin: 0; padding: 0; }
+    header, footer { background: #222; color: #fff; text-align: center; padding: 10px; }
+    nav a { color: white; margin: 0 10px; text-decoration: none; }
+    section { padding: 20px; }
+
+    /* Responsive Grid */
+    .grid { display: flex; flex-wrap: wrap; gap: 15px; }
+    .card { flex: 1 1 calc(33% - 20px); border: 1px solid #ccc; padding: 10px; border-radius: 8px; }
+    @media(max-width:768px){ .card { flex: 1 1 100%; } }
+
+    input, button, select { padding: 5px; margin: 5px 0; }
+
+    /* Highlight sections */
+    #todo-section, #products-section { background: #f9f9f9; }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>My Portfolio</h1>
+  <nav>
+    <a href="#about-section">About</a>
+    <a href="#projects-section">Projects</a>
+    <a href="#contact-section">Contact</a>
+  </nav>
+</header>
+
+<!-- About Section -->
+<section id="about-section">
+  <h2>About Me</h2>
+  <p>Hello! I'm a web developer passionate about building clean and functional websites using HTML, CSS, and JavaScript.</p>
+</section>
+
+<!-- Projects Section -->
+<section id="projects-section">
+  <h2>Projects</h2>
+  <ul>
+    <li>✔️ Personal Portfolio Website (Responsive)</li>
+    <li>✔️ To-Do List App using Local Storage</li>
+    <li>✔️ Product Page with Filtering & Sorting</li>
+  </ul>
+</section>
+
+<!-- Contact Section -->
+<section id="contact-section">
+  <h2>Contact</h2>
+  <p>Email: yourname@example.com</p>
+  <p>LinkedIn: linkedin.com/in/yourprofile</p>
+</section>
+
+<!-- To-Do List with Local Storage -->
+<section id="todo-section">
+  <h2>📝 To-Do List</h2>
+  <input id="todoInput" type="text" placeholder="Enter task"/>
+  <button onclick="addTodo()">Add</button>
+  <ul id="todoList"></ul>
+</section>
+
+<!-- Product Page with Filter & Sort -->
+<section id="products-section">
+  <h2>🛍️ Product List</h2>
+  <label>Category:
+    <select id="categoryFilter" onchange="filterProducts()">
+      <option value="All">All</option>
+      <option value="Books">Books</option>
+      <option value="Electronics">Electronics</option>
+    </select>
+  </label>
+  <label>Sort By:
+    <select id="sortOption" onchange="sortProducts()">
+      <option value="name">Name</option>
+      <option value="price">Price</option>
+    </select>
+  </label>
+  <div class="grid" id="productList"></div>
+</section>
+
+<footer>
+  <p>&copy; 2025 My Portfolio</p>
+</footer>
+
+<script>
+  // ========== To-Do List ==========
+  let todos = JSON.parse(localStorage.getItem("todos")) || [];
+  const list = document.getElementById("todoList");
+
+  function displayTodos() {
+    list.innerHTML = "";
+    todos.forEach((item, i) => {
+      list.innerHTML += `<li>${item} <button onclick="removeTodo(${i})">X</button></li>`;
+    });
+  }
+
+  function addTodo() {
+    const input = document.getElementById("todoInput");
+    if (input.value.trim()) {
+      todos.push(input.value.trim());
+      localStorage.setItem("todos", JSON.stringify(todos));
+      input.value = "";
+      displayTodos();
+    }
+  }
+
+  function removeTodo(index) {
+    todos.splice(index, 1);
+    localStorage.setItem("todos", JSON.stringify(todos));
+    displayTodos();
+  }
+
+  displayTodos();
+
+  // ========== Product Filter & Sort ==========
+  const products = [
+    { name: "Laptop", category: "Electronics", price: 800 },
+    { name: "Book: JS Guide", category: "Books", price: 25 },
+    { name: "Smartphone", category: "Electronics", price: 500 },
+    { name: "Book: HTML Basics", category: "Books", price: 15 },
+    { name: "Headphones", category: "Electronics", price: 60 }
+  ];
+
+  let filtered = [...products];
+
+  function displayProducts() {
+    const div = document.getElementById("productList");
+    div.innerHTML = "";
+    filtered.forEach(p => {
+      div.innerHTML += `
+        <div class="card">
+          <h3>${p.name}</h3>
+          <p>Category: ${p.category}</p>
+          <p>Price: $${p.price}</p>
+        </div>`;
+    });
+  }
+
+  function filterProducts() {
+    const category = document.getElementById("categoryFilter").value;
+    filtered = category === "All" ? [...products] : products.filter(p => p.category === category);
+    sortProducts(); // apply current sorting
+  }
+
+  function sortProducts() {
+    const option = document.getElementById("sortOption").value;
+    filtered.sort((a, b) => option === "price" ? a.price - b.price : a.name.localeCompare(b.name));
+    displayProducts();
+  }
+
+  filterProducts(); // initial display
+</script>
+
+</body>
+</html>
